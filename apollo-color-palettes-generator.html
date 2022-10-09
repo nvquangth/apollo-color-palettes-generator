@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Apollo Color Palettes Generator</title>
+	<style type="text/css">
+		body {
+			margin-left: 64px;
+		}
+	</style>
+</head>
+<body>
+	<h1>Apollo Color Generator</h1>
+	<label>Primary &nbsp; &nbsp;</label>
+	<input type="color" id="primaryColor" value="#ff0000"><br><br>
+	<label>Secondary</label>
+	<input type="color" id="secondaryColor" value="#ff0000"><br><br>
+	<button onclick="generateColor()" id="buttonGenerate">Generate</button>
+	<button onclick="showResultAsRawViewer()" id="buttonRawViewer">Raw Viewer</button>
+	<button onclick="showResultAsJsonViewer()" id="buttonJsonViewer">Json Viewer</button><br><br>
+	<button onclick="copyColor()" id="buttonCopy">Copy</button><br><br>
+	<pre id="colorResultJson"><code></code></pre>
+	<pre id="colorResultRaw"><code></code></pre>
+</body>
+<body>
+
+</body>
+
+<script type="text/javascript">
+
+	document.getElementById("primaryColor").addEventListener("input", function() {
+		document.getElementById("buttonGenerate").innerHTML = "Generate";
+	});
+	document.getElementById("secondaryColor").addEventListener("input", function() {
+		document.getElementById("buttonGenerate").innerHTML = "Generate";
+	});
+
+	showResultAsRawViewer();
+
+	function showResultAsRawViewer() {
+		document.getElementById("buttonRawViewer").style.display = "none";
+		document.getElementById("buttonJsonViewer").style.display = "inline";
+		document.getElementById("colorResultJson").style.display = "none";
+		document.getElementById("colorResultRaw").style.display = "inline";
+		document.getElementById("buttonCopy").innerHTML = "Copy";
+	}
+
+	function showResultAsJsonViewer() {
+		document.getElementById("buttonRawViewer").style.display = "inline";
+		document.getElementById("buttonJsonViewer").style.display = "none";
+		document.getElementById("colorResultJson").style.display = "inline";
+		document.getElementById("colorResultRaw").style.display = "none";
+		document.getElementById("buttonCopy").innerHTML = "Copy";
+	}
+
+	function copyColor() {
+		let copyText;
+		if (document.getElementById("buttonRawViewer").style.display === "inline") {
+			copyText = document.getElementById("colorResultJson").innerHTML;
+		} else {
+			copyText = document.getElementById("colorResultRaw").innerHTML;
+		}
+		navigator.clipboard.writeText(copyText);
+		document.getElementById("buttonCopy").innerHTML = "Copied";
+	}
+
+	function generateColor() {
+
+		document.getElementById("buttonCopy").innerHTML = "Copy";
+		document.getElementById("colorResultJson").innerHTML = "";
+		document.getElementById("colorResultRaw").innerHTML = "";
+
+	    let primaryColor = document.getElementById("primaryColor").value;
+	    let secondaryColor = document.getElementById("secondaryColor").value;
+
+	    if (typeof primaryColor === 'string' && primaryColor.length !== 6 && primaryColor.length !== 7) {
+	        console.log("Primary color input invalid!");
+	        return;
+	    }
+	    if (primaryColor.length === 7) primaryColor = primaryColor.substring(1);
+	    primaryColor = primaryColor.toUpperCase();
+
+	    if (typeof secondaryColor === 'string' && secondaryColor.length !== 6 && secondaryColor.length !== 7) {
+	        console.log("Secondary color input invalid!")
+	        secondaryColor = primaryColor;
+	    }
+	    if (secondaryColor.length === 7) secondaryColor = secondaryColor.substring(1);
+	    secondaryColor = secondaryColor.toUpperCase();
+
+	    console.log(`Primary: ${primaryColor}`);
+	    console.log(`Secondary: ${secondaryColor}`);
+
+	    let primaryColorPalettes = generateColorPalettes(primaryColor);
+	    let secondaryColorPalettes = generateColorPalettes(secondaryColor);
+
+	    let resultJson =
+	    `{
+    "@type": "type.googleapis.com/terra.v1.ApolloServiceConfigData",
+    "colorConfig":
+    {
+        "primaryColor":
+        {
+            "color900": "${primaryColorPalettes.color900}",
+            "color800": "${primaryColorPalettes.color800}",
+            "color700": "${primaryColorPalettes.color700}",
+            "color600": "${primaryColorPalettes.color600}",
+            "color500": "${primaryColorPalettes.color500}",
+            "color400": "${primaryColorPalettes.color400}",
+            "color300": "${primaryColorPalettes.color300}",
+            "color200": "${primaryColorPalettes.color200}",
+            "color100": "${primaryColorPalettes.color100}",
+            "color50": "${primaryColorPalettes.color50}"
+        },
+        "errorColor":
+        {
+            "color900": "#AE3636",
+            "color800": "#AE3636",
+            "color700": "#AE3636",
+            "color600": "#C43C3C",
+            "color500": "#DA4343",
+            "color400": "#DA4343",
+            "color300": "#DA4343",
+            "color200": "#F8D9D9",
+            "color100": "#FBECEC",
+            "color50": "#FDF6F6"
+        },
+        "pendingColor":
+        {
+            "color900": "#CC8733",
+            "color800": "#CC8733",
+            "color700": "#CC8733",
+            "color600": "#E6983A",
+            "color500": "#FFA940",
+            "color400": "#FFA940",
+            "color300": "#FFA940",
+            "color200": "#FFEED9",
+            "color100": "#FFF6EC",
+            "color50": "#FFFBF5"
+        },
+        "linkColor":
+        {
+            "color900": "#1473CC",
+            "color800": "#1473CC",
+            "color700": "#1473CC",
+            "color600": "#1782E6",
+            "color500": "#1990FF",
+            "color400": "#1990FF",
+            "color300": "#1990FF",
+            "color200": "#D1E9FF",
+            "color100": "#E8F4FF",
+            "color50": "#F4F9FF"
+        },
+        "successColor":
+        {
+            "color900": "#26A44D",
+            "color800": "#26A44D",
+            "color700": "#26A44D",
+            "color600": "#2BB956",
+            "color500": "#30CD60",
+            "color400": "#30CD60",
+            "color300": "#30CD60",
+            "color200": "#D6F5DF",
+            "color100": "#EAFAEF",
+            "color50": "#F5FDF7"
+        },
+        "neutralColor":
+        {
+            "whiteColor": "#FFFFFF",
+            "tableHeaderColor": "#FBFBFD",
+            "backgroundColor": "#F8F8FC",
+            "dividerColor": "#E4E5F0",
+            "disableColor": "#DCDEE9",
+            "borderColor": "#BCBFD6",
+            "placeholderColor": "#A7ABC3",
+            "secondaryTextColor": "#82869E",
+            "primaryTextColor": "#434657",
+            "titleTextColor": "#1B1D29"
+        },
+        "secondaryColor":
+        {
+            "color900": "${secondaryColorPalettes.color900}",
+            "color800": "${secondaryColorPalettes.color800}",
+            "color700": "${secondaryColorPalettes.color700}",
+            "color600": "${secondaryColorPalettes.color600}",
+            "color500": "${secondaryColorPalettes.color500}",
+            "color400": "${secondaryColorPalettes.color400}",
+            "color300": "${secondaryColorPalettes.color300}",
+            "color200": "${secondaryColorPalettes.color200}",
+            "color100": "${secondaryColorPalettes.color100}",
+            "color50": "${secondaryColorPalettes.color50}"
+        }
+    }
+}`;
+
+	    let resultRaw =
+	    	`{"@type":"type.googleapis.com/terra.v1.ApolloServiceConfigData","colorConfig":{"primaryColor":{"color900":"${primaryColorPalettes.color900}","color800":"${primaryColorPalettes.color800}","color700":"${primaryColorPalettes.color700}","color600":"${primaryColorPalettes.color600}","color500":"${primaryColorPalettes.color500}","color400":"${primaryColorPalettes.color400}","color300":"${primaryColorPalettes.color300}","color200":"${primaryColorPalettes.color200}","color100":"${primaryColorPalettes.color100}","color50":"${primaryColorPalettes.color50}"},"errorColor":{"color900":"#AE3636","color800":"#AE3636","color700":"#AE3636","color600":"#C43C3C","color500":"#DA4343","color400":"#DA4343","color300":"#DA4343","color200":"#F8D9D9","color100":"#FBECEC","color50":"#FDF6F6"},"pendingColor":{"color900":"#CC8733","color800":"#CC8733","color700":"#CC8733","color600":"#E6983A","color500":"#FFA940","color400":"#FFA940","color300":"#FFA940","color200":"#FFEED9","color100":"#FFF6EC","color50":"#FFFBF5"},"linkColor":{"color900":"#1473CC","color800":"#1473CC","color700":"#1473CC","color600":"#1782E6","color500":"#1990FF","color400":"#1990FF","color300":"#1990FF","color200":"#D1E9FF","color100":"#E8F4FF","color50":"#F4F9FF"},"successColor":{"color900":"#26A44D","color800":"#26A44D","color700":"#26A44D","color600":"#2BB956","color500":"#30CD60","color400":"#30CD60","color300":"#30CD60","color200":"#D6F5DF","color100":"#EAFAEF","color50":"#F5FDF7"},"neutralColor":{"whiteColor":"#FFFFFF","tableHeaderColor":"#FBFBFD","backgroundColor":"#F8F8FC","dividerColor":"#E4E5F0","disableColor":"#DCDEE9","borderColor":"#BCBFD6","placeholderColor":"#A7ABC3","secondaryTextColor":"#82869E","primaryTextColor":"#434657","titleTextColor":"#1B1D29"},"secondaryColor":{"color900":"${secondaryColorPalettes.color900}","color800":"${secondaryColorPalettes.color800}","color700":"${secondaryColorPalettes.color700}","color600":"${secondaryColorPalettes.color600}","color500":"${secondaryColorPalettes.color500}","color400":"${secondaryColorPalettes.color400}","color300":"${secondaryColorPalettes.color300}","color200":"${secondaryColorPalettes.color200}","color100":"${secondaryColorPalettes.color100}","color50":"${secondaryColorPalettes.color50}"}}}`;
+
+	    console.log(resultJson);
+	    document.getElementById("colorResultJson").innerHTML = resultJson;
+	    document.getElementById("colorResultRaw").innerHTML = resultRaw;
+	    document.getElementById("buttonGenerate").innerHTML = "Generated"
+	}
+
+	function generateColorPalettes(color) {
+
+	    let red = color.substring(0, 2);
+	    let green = color.substring(2, 4);
+	    let blue = color.substring(4);
+
+	    let redInHex = parseInt(red, 16);
+	    let greenInHex = parseInt(green, 16);
+	    let blueInHex = parseInt(blue, 16);
+
+	    let color50 = getColor(redInHex, greenInHex, blueInHex, false, 95);
+	    let color100 = getColor(redInHex, greenInHex, blueInHex, false, 90);
+	    let color200 = getColor(redInHex, greenInHex, blueInHex, false, 80);
+	    let color300 = getColor(redInHex, greenInHex, blueInHex, false, 70);
+	    let color400 = getColor(redInHex, greenInHex, blueInHex, false, 60);
+	    let color500 = `#${color}`;
+	    let color600 = getColor(redInHex, greenInHex, blueInHex, true, 10);
+	    let color700 = getColor(redInHex, greenInHex, blueInHex, true, 20);
+	    let color800 = getColor(redInHex, greenInHex, blueInHex, true, 30);
+	    let color900 = getColor(redInHex, greenInHex, blueInHex, true, 40);
+
+	    return {
+	        "color900": color900,
+	        "color800": color800,
+	        "color700": color700,
+	        "color600": color600,
+	        "color500": color500,
+	        "color400": color400,
+	        "color300": color300,
+	        "color200": color200,
+	        "color100": color100,
+	        "color50": color50,
+	    };
+	}
+
+	function getColor(r, g, b, isNegative, percent) {
+	    let red = getActualColor(r, percent, isNegative);
+	    let green = getActualColor(g, percent, isNegative);
+	    let blue = getActualColor(b, percent, isNegative);
+
+	    return `#${red}${green}${blue}`;
+	}
+
+	function getActualColor(value, percent, isNegative) {
+
+	    let calculatedValue = isNegative ? value : (255 - value);
+
+	    let actualValue = !isNegative ? (calculatedValue * percent / 100 + value) : (calculatedValue * (100 - percent) / 100);
+
+	    actualValue = Math.floor(actualValue);
+
+	    let hex = actualValue.toString(16).toUpperCase();
+
+	    if (hex.length === 0 || hex.length > 2) {
+	        return "00";
+	    }
+
+	    if (hex.length === 1) {
+	        return `0${hex}`;
+	    }
+
+	    return hex;
+	}
+</script>
+</html>
